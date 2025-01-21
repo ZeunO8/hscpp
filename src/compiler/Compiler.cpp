@@ -67,6 +67,7 @@ namespace hscpp
 
         fs::path commandFilePath = input.buildDirectoryPath / COMMAND_FILENAME;
         fs::path moduleFilePath = input.buildDirectoryPath / MODULE_FILENAME;
+
         if (!m_pCompilerCmdLine->GenerateCommandFile(commandFilePath, moduleFilePath, input))
         {
             log::Error() << HSCPP_LOG_PREFIX << "Failed to generate command file." << log::End();
@@ -140,10 +141,11 @@ namespace hscpp
         return !m_CompiledModulePath.empty();
     }
 
-    fs::path Compiler::PopModule()
+    fs::path Compiler::PopModule(bool doPop)
     {
         fs::path modulePath = m_CompiledModulePath;
-        m_CompiledModulePath.clear();
+    		if (doPop)
+						m_CompiledModulePath.clear();
 
         return modulePath;
     }

@@ -33,7 +33,7 @@ namespace hscpp
         virtual bool IsCompiling() = 0;
 
         virtual bool HasCompiledModule() = 0;
-        virtual fs::path PopModule() = 0;
+        virtual fs::path PopModule(bool doPop = true) = 0;
     };
 
 }

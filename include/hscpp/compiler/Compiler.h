@@ -24,7 +24,7 @@ namespace hscpp
         bool IsCompiling() override;
 
         bool HasCompiledModule() override;
-        fs::path PopModule() override;
+        fs::path PopModule(bool doPop) override;
 
     private:
         enum class CompilerTask

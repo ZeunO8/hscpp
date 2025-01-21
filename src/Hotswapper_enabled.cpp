@@ -117,7 +117,7 @@ namespace hscpp
         return m_FeatureManager.IsFeatureEnabled(feature);
     }
 
-    void Hotswapper::TriggerManualBuild()
+    void Hotswapper::TriggerManualBuild(bool performSwap)
     {
         if (CreateBuildDirectory())
         {
@@ -132,7 +132,7 @@ namespace hscpp
                         std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     }
 
-                    if (m_pCompiler->HasCompiledModule())
+                    if (performSwap && m_pCompiler->HasCompiledModule())
                     {
                         PerformRuntimeSwap();
                     }
@@ -141,23 +141,73 @@ namespace hscpp
         }
     }
 
-    Hotswapper::UpdateResult Hotswapper::Update()
+    Hotswapper::UpdateResult Hotswapper::Update(bool performSwap)
     {
         if (m_bDependencyGraphNeedsRefresh)
         {
             RefreshDependencyGraph();
         }
 
+    	if (m_beforeCompile)
+    	{
+    		std::vector<fs::path> canonicalModifiedFilePaths;
+    		std::vector<fs::path> canonicalRemovedFilePaths;
+
+    		util::SortFileEvents(m_FileEvents, canonicalModifiedFilePaths, canonicalRemovedFilePaths);
+    		UpdateDependencyGraph(canonicalModifiedFilePaths, canonicalRemovedFilePaths);
+
+    		if (!canonicalModifiedFilePaths.empty())
+    		{
+    			ICompiler::Input compilerInput;
+    			if (CreateCompilerInput(canonicalModifiedFilePaths, compilerInput))
+    			{
+    				if (StartCompile(compilerInput))
+    				{
+    					m_beforeCompile = false;
+    					return UpdateResult::StartedCompiling;
+    				}
+    			}
+    		}
+    	}
+
+    	if (!IsFeatureEnabled(Feature::ManualCompilationOnly))
+    	{
+    		m_pFileWatcher->PollChanges(m_FileEvents);
+    	}
+
+    	if (!m_FileEvents.empty())
+    	{
+    		if (CreateBuildDirectory())
+    		{
+    			m_beforeCompile = true;
+    			return UpdateResult::BeforeCompile;
+    		}
+    	}
+
         m_pCompiler->Update();
         if (m_pCompiler->IsCompiling())
         {
             // Currently compiling. Let file changes queue up, to be handled after the module
             // has been swapped.
+        		if (m_returnedCompiled)
+        				m_returnedCompiled = false;
             return UpdateResult::Compiling;
         }
 
         if (m_pCompiler->HasCompiledModule())
         {
+        		if (!performSwap)
+        		{
+        			if (!m_returnedCompiled)
+        			{
+        				m_returnedCompiled = true;
+        				return UpdateResult::Compiled;
+        			}
+        			else
+        			{
+        				return UpdateResult::Idle;
+        			}
+        		}
             if (PerformRuntimeSwap())
             {
                 return UpdateResult::PerformedSwap;

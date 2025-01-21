@@ -30,9 +30,11 @@ namespace hscpp
         {
             Idle,
             Compiling,
+        		BeforeCompile,
             StartedCompiling,
             PerformedSwap,
             FailedSwap,
+        		Compiled
         };
 
         Hotswapper();
@@ -51,9 +53,9 @@ namespace hscpp
         void DisableFeature(Feature feature);
         bool IsFeatureEnabled(Feature feature);
 
-        void TriggerManualBuild();
+        void TriggerManualBuild(bool performSwap = true);
 
-        UpdateResult Update();
+        UpdateResult Update(bool performSwap = true);
         bool IsCompiling();
         bool IsCompilerInitialized();
 
@@ -156,6 +158,8 @@ namespace hscpp
         std::vector<IFileWatcher::Event> m_FileEvents;
 
         std::unique_ptr<ICompiler> m_pCompiler;
+    		bool m_returnedCompiled = false;
+    		bool m_beforeCompile = false;
         std::unique_ptr<IPreprocessor> m_pPreprocessor;
 
         ModuleManager m_ModuleManager;

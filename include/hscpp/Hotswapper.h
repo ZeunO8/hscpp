@@ -85,6 +85,7 @@ namespace hscpp
         void ClearLibraryDirectories();
 
         int AddLibrary(const fs::path& libraryPath);
+    		int LinkLibrary(const fs::path& libraryName);
         int LocateAndAddLibrary(const fs::path& rootPath, const fs::path& libraryName);
         bool RemoveLibrary(int handle);
         void EnumerateLibraries(const std::function<void(int handle, const fs::path& libraryPath)>& cb);
@@ -128,6 +129,7 @@ namespace hscpp
         int m_NextForceCompiledSourceFileHandle = 0;
         int m_NextLibraryDirectoryHandle = 0;
         int m_NextLibraryHandle = 0;
+        int m_NextLibraryNameHandle = 0;
         int m_NextPreprocessorDefinitionHandle = 0;
         int m_NextCompileOptionHandle = 0;
         int m_NextLinkOptionHandle = 0;
@@ -142,6 +144,7 @@ namespace hscpp
         std::map<int, fs::path> m_ForceCompiledSourceFilePathsByHandle;
         std::map<int, fs::path> m_LibraryDirectoryPathsByHandle;
         std::map<int, fs::path> m_LibraryPathsByHandle;
+        std::map<int, fs::path> m_LibraryNamesByHandle;
         std::map<int, std::string> m_PreprocessorDefinitionsByHandle;
         std::map<int, std::string> m_CompileOptionsByHandle;
         std::map<int, std::string> m_LinkOptionsByHandle;

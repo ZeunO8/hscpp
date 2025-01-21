@@ -66,6 +66,15 @@ namespace hscpp
             command << "\"" << library.string() << "\"" << std::endl;
         }
 
+    		auto libraryNamesSize = input.libraryNames.size();
+    		if (libraryNamesSize)
+    		{
+    			command << "/link";
+    			for (const auto& libraryName : input.libraryNames)
+    				command << " " << libraryName.string();
+    			command << std::endl;
+    		}
+
         for (const auto& preprocessorDefinition : input.preprocessorDefinitions)
         {
             command << "/D" << "\"" << preprocessorDefinition << "\"" << std::endl;

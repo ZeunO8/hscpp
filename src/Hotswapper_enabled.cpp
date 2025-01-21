@@ -332,6 +332,11 @@ namespace hscpp
          return Add(directoryPath, m_NextLibraryDirectoryHandle, m_LibraryDirectoryPathsByHandle);
     }
 
+		int Hotswapper::LinkLibrary(const fs::path& libraryName)
+    {
+				return Add(libraryName, m_NextLibraryNameHandle, m_LibraryNamesByHandle);
+    }
+
     bool Hotswapper::RemoveLibraryDirectory(int handle)
     {
         return Remove(handle, m_LibraryDirectoryPathsByHandle);
@@ -484,6 +489,7 @@ namespace hscpp
         compilerInput.sourceFilePaths = sourceFilePaths;
         compilerInput.includeDirectoryPaths = AsVector(m_IncludeDirectoryPathsByHandle);
         compilerInput.libraryDirectoryPaths = AsVector(m_LibraryDirectoryPathsByHandle);
+        compilerInput.libraryNames = AsVector(m_LibraryNamesByHandle);
         compilerInput.libraryPaths = AsVector(m_LibraryPathsByHandle);
         compilerInput.preprocessorDefinitions = AsVector(m_PreprocessorDefinitionsByHandle);
         compilerInput.compileOptions = AsVector(m_CompileOptionsByHandle);

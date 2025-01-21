@@ -503,7 +503,7 @@ namespace hscpp
 			if (m_pModule)
 			{
 				auto modulePath = m_pCompiler->PopModule();
-				platform::UnLoadModule(m_pModule, modulePath);
+				platform::UnLoadModule(m_pModule);
 				m_pModule = 0;
 			}
 		}

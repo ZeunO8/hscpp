@@ -116,6 +116,19 @@ namespace hscpp
 
     		void SetBuildDirectory(const std::string& directory);
 
+    		fs::path PopModule(bool doPop = true);
+    		template <typename T>
+    		std::function<T> GetFunction(const char *functionName, bool doPop = false)
+    		{
+    			if (!m_pModule)
+    			{
+    				auto modulePath = PopModule(doPop);
+    				m_pModule = platform::LoadModule(modulePath);
+    			}
+    			return platform::GetModuleFunction<T>(m_pModule, functionName);
+    		}
+    		void UnLoadModule();
+
 #if defined(HSCPP_DISABLE)
     private:
         ModuleManager m_ModuleManager;
@@ -159,6 +172,7 @@ namespace hscpp
 
         std::unique_ptr<ICompiler> m_pCompiler;
     		bool m_returnedCompiled = false;
+    		void *m_pModule = nullptr;
     		bool m_beforeCompile = false;
         std::unique_ptr<IPreprocessor> m_pPreprocessor;
 

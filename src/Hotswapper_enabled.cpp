@@ -218,35 +218,6 @@ namespace hscpp
             }
         }
 
-        if (!IsFeatureEnabled(Feature::ManualCompilationOnly))
-        {
-            m_pFileWatcher->PollChanges(m_FileEvents);
-        }
-
-        if (!m_FileEvents.empty())
-        {
-            if (CreateBuildDirectory())
-            {
-                std::vector<fs::path> canonicalModifiedFilePaths;
-                std::vector<fs::path> canonicalRemovedFilePaths;
-
-                util::SortFileEvents(m_FileEvents, canonicalModifiedFilePaths, canonicalRemovedFilePaths);
-                UpdateDependencyGraph(canonicalModifiedFilePaths, canonicalRemovedFilePaths);
-
-                if (!canonicalModifiedFilePaths.empty())
-                {
-                    ICompiler::Input compilerInput;
-                    if (CreateCompilerInput(canonicalModifiedFilePaths, compilerInput))
-                    {
-                        if (StartCompile(compilerInput))
-                        {
-                            return UpdateResult::StartedCompiling;
-                        }
-                    }
-                }
-            }
-        }
-
         return UpdateResult::Idle;
     }
 
@@ -517,6 +488,26 @@ namespace hscpp
     {
 	    m_CustomBuildFolder = directory;
     };
+
+		fs::path Hotswapper::PopModule(bool doPop)
+		{
+			if (m_pCompiler->HasCompiledModule())
+			{
+				return m_pCompiler->PopModule(doPop);
+			}
+			throw std::runtime_error("Hotswapper has not compiled module");
+		}
+
+		void Hotswapper::UnLoadModule()
+		{
+			if (m_pModule)
+			{
+				auto modulePath = m_pCompiler->PopModule();
+				platform::UnLoadModule(m_pModule, modulePath);
+				m_pModule = 0;
+			}
+		}
+
 
     //============================================================================
 

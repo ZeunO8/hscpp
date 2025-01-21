@@ -318,4 +318,16 @@ namespace hscpp { namespace platform
 #endif
     }
 
+		void UnLoadModule(void* pModule)
+    {
+#if defined(HSCPP_PLATFORM_WIN32)
+    	FreeLibrary((HMODULE)pModule);
+    	SetDllDirectory(NULL);
+#elif defined(HSCPP_PLATFORM_UNIX)
+    	dlclose(pModule);
+#else
+    	static_assert(false, "Unsupported platform.");
+#endif
+    }
+
 }}

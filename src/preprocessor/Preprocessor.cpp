@@ -175,7 +175,7 @@ namespace hscpp
 
     bool Preprocessor::Process(const fs::path& filePath, Interpreter::Result& result)
     {
-        std::ifstream ifs(filePath.u8string());
+        std::ifstream ifs(filePath.string());
         if (!ifs.is_open())
         {
             log::Error() << HSCPP_LOG_PREFIX << "Failed to open file "

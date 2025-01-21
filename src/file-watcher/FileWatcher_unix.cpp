@@ -42,7 +42,7 @@ namespace hscpp
         }
 
         int mask = IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO;
-        int wd = inotify_add_watch(m_NotifyFd, directoryPath.u8string().c_str(), mask);
+        int wd = inotify_add_watch(m_NotifyFd, directoryPath.string().c_str(), mask);
         if (wd == -1)
         {
             log::Error() << HSCPP_LOG_PREFIX << "Failed to add directory "

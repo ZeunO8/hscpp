@@ -628,7 +628,7 @@ namespace hscpp
     		}
 
         std::error_code error;
-        if (!fs::create_directory(m_BuildDirectoryPath, error))
+        if (!fs::is_directory(m_BuildDirectoryPath) && !fs::create_directory(m_BuildDirectoryPath, error))
         {
             log::Error() << HSCPP_LOG_PREFIX << "Failed to create directory "
                 << m_BuildDirectoryPath << ". " << log::OsError(error) << log::End();

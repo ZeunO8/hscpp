@@ -112,6 +112,8 @@ namespace hscpp
         void SetVar(const std::string& name, bool val);
         bool RemoveVar(const std::string& name);
 
+    		void SetBuildDirectory(const std::string& directory);
+
 #if defined(HSCPP_DISABLE)
     private:
         ModuleManager m_ModuleManager;
@@ -135,6 +137,7 @@ namespace hscpp
         int m_NextLinkOptionHandle = 0;
 
         fs::path m_BuildDirectoryPath;
+    		std::string m_CustomBuildFolder;
 
         // Use std::map, to ensure that entries are ordered by their handle. Since handles are
         // assigned in increasing order, map order will match the order in which elements are

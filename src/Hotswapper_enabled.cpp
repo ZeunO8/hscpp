@@ -463,6 +463,11 @@ namespace hscpp
         return m_pPreprocessor->RemoveVar(name);
     }
 
+		void Hotswapper::SetBuildDirectory(const std::string& directory)
+    {
+	    m_CustomBuildFolder = directory;
+    };
+
     //============================================================================
 
     bool Hotswapper::StartCompile(ICompiler::Input& compilerInput)
@@ -603,16 +608,24 @@ namespace hscpp
 
     bool Hotswapper::CreateBuildDirectory()
     {
-        if (m_HscppTempDirectoryPath.empty())
-        {
-            if (!CreateHscppTempDirectory())
-            {
-                return false;
-            }
-        }
+    		if (!m_CustomBuildFolder.empty())
+    		{
+    				if (m_BuildDirectoryPath.string() != m_CustomBuildFolder)
+		    				m_BuildDirectoryPath = m_CustomBuildFolder;
+    		}
+    		else
+    		{
+		        if (m_HscppTempDirectoryPath.empty())
+		        {
+		            if (!CreateHscppTempDirectory())
+		            {
+		                return false;
+		            }
+		        }
 
-        std::string guid = platform::CreateGuid();
-        m_BuildDirectoryPath = m_HscppTempDirectoryPath / guid;
+		        std::string guid = platform::CreateGuid();
+		        m_BuildDirectoryPath = m_HscppTempDirectoryPath / guid;
+    		}
 
         std::error_code error;
         if (!fs::create_directory(m_BuildDirectoryPath, error))

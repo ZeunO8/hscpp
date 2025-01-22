@@ -69,9 +69,9 @@ namespace hscpp
             }
         }
 
-        template <typename T>
+        template <typename T, typename... Args>
         typename std::enable_if<IsTracked<T>::no, void>::type
-        Allocate(AllocationInfo& info)
+        Allocate(AllocationInfo& info, Args&&... args)
         {
             // This is a non-tracked type. Perform a normal allocation.
             if (ModuleSharedState::s_pAllocator != nullptr)
@@ -79,20 +79,20 @@ namespace hscpp
                 uint64_t size = sizeof(typename std::aligned_storage<sizeof(T)>::type);
 
                 info = ModuleSharedState::s_pAllocator->Hscpp_Allocate(size);
-                new (info.pMemory) T;
+                new (info.pMemory) T (std::forward<Args>(args)...);
             }
             else
             {
                 info = AllocationInfo();
-                info.pMemory = reinterpret_cast<uint8_t*>(new T());
+                info.pMemory = reinterpret_cast<uint8_t*>(new T(std::forward<Args>(args)...));
             }
         }
 
-        template <typename T>
-        T* Allocate()
+        template <typename T, typename... Args>
+        T* Allocate(Args&&... args)
         {
             AllocationInfo info;
-            Allocate<T>(info);
+            Allocate<T>(info, args...);
 
             return reinterpret_cast<T*>(info.pMemory);
         }

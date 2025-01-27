@@ -69,6 +69,15 @@ namespace hscpp
             }
         }
 
+        auto libraryNamesSize = input.libraryNames.size();
+        if (libraryNamesSize)
+        {
+            for (const auto& libraryName : input.libraryNames)
+            {
+                command << "-l" << libraryName.string() << std::endl;
+            }
+        }
+
         for (const auto& file : input.sourceFilePaths)
         {
             command << "\"" << util::UnixSlashes(file.string()) << "\"" << std::endl;

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <functional>
+#include <iostream>
 
 #include "hscpp/file-watcher/IFileWatcher.h"
 #include "hscpp/compiler/ICompiler.h"
@@ -73,9 +74,13 @@ typedef int TOsError;
                     reinterpret_cast<TSignature*>(
                             GetProcAddress(static_cast<HMODULE>(pModule), name.c_str())));
 #else
-            return std::function<TSignature>(
-                    reinterpret_cast<TSignature*>(
-                            dlsym(pModule, name.c_str())));
+                auto proc = dlsym(pModule, name.c_str());
+                if (!proc)
+                {
+                        std::cerr << "dlsym failed: " << dlerror() << std::endl;
+                        return std::function<TSignature>();
+                }
+                return std::function<TSignature>(reinterpret_cast<TSignature*>(proc));
 #endif
         }
     }

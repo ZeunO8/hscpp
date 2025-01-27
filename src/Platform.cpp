@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 
 #include "hscpp/Platform.h"
 #include "hscpp/Log.h"
@@ -311,7 +312,14 @@ namespace hscpp { namespace platform
 #if defined(HSCPP_PLATFORM_WIN32)
         return LoadLibraryW(modulePath.wstring().c_str());
 #elif defined(HSCPP_PLATFORM_UNIX)
-        return dlopen(modulePath.string().c_str(), RTLD_NOW);
+        auto str = modulePath.string();
+        auto handle = dlopen(str.c_str(), RTLD_NOW | RTLD_GLOBAL);
+        if (!handle)
+        {
+            std::cerr << "dlopen failed: " << dlerror() << std::endl;
+            return nullptr;
+        }
+        return handle;
 #else
         static_assert(false, "Unsupported platform.");
         return nullptr;
